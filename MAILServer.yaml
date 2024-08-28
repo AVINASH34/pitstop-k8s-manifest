@@ -18,6 +18,11 @@ spec:
         ports:
         - containerPort: 25
         - containerPort: 80
+      tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: "NoSchedule"
 
 ---
 apiVersion: v1
@@ -26,9 +31,11 @@ metadata:
   name: mailserver
 spec:
   ports:
-  - port: 25
+  - name: smtp
+    port: 25
     targetPort: 25
-  - port: 80
+  - name: http
+    port: 80
     targetPort: 80
   selector:
     app: mailserver

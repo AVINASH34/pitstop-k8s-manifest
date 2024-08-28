@@ -28,6 +28,11 @@ spec:
         env:
         - name: RABBITMQ_CONFIG_FILE
           value: /etc/pitstop/rabbitmq.conf
+      tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Equal"
+        value: "arm64"
+        effect: "NoSchedule"
       volumes:
       - name: rabbitmqdata
         persistentVolumeClaim:
@@ -36,7 +41,6 @@ spec:
         configMap:
           name: rabbitmq-config
 
-          
 ---
 apiVersion: v1
 kind: Service
@@ -44,13 +48,14 @@ metadata:
   name: rabbitmq
 spec:
   ports:
-  - port: 5672
+  - name: amqp
+    port: 5672
     targetPort: 5672
-  - port: 15672
+  - name: management
+    port: 15672
     targetPort: 15672
   selector:
     app: rabbitmq
-
 
 ---
 apiVersion: v1
@@ -61,7 +66,6 @@ data:
   rabbitmq.conf: |
     default_user = rabbitmquser
     default_pass = DEBmbwkSrzy9D1T9cJfa
-
 
 ---
 apiVersion: v1
